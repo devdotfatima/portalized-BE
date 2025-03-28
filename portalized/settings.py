@@ -15,6 +15,10 @@ import certifi
 from pathlib import Path
 from datetime import timedelta
 
+import dj_database_url
+import os
+
+
 
 import os
 import environ
@@ -177,13 +181,20 @@ WSGI_APPLICATION = 'portalized.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
 
+
+DATABASES = {
+    'default': dj_database_url.config(
+        default=os.getenv('DATABASE_URL'),  # This reads from Heroku's config vars
+        conn_max_age=600,  # Optimized for Heroku
+    )
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
