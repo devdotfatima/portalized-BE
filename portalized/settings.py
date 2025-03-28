@@ -59,6 +59,10 @@ DEBUG = True
 ALLOWED_HOSTS = [
     '1be6-103-141-159-83.ngrok-free.app' ,
     '127.0.0.1'
+    "localhost",
+  
+    "portalized-0aad6191bbad.herokuapp.com",
+    os.getenv("HEROKU_APP_NAME") + ".herokuapp.com" if os.getenv("HEROKU_APP_NAME") else "",
 ]
 
 
@@ -124,8 +128,7 @@ CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:3000",
    "http://localhost:5173",
     "127.0.0.1",
-    "portalized-0aad6191bbad.herokuapp.com",
-    os.getenv("HEROKU_APP_NAME") + ".herokuapp.com" if os.getenv("HEROKU_APP_NAME") else "",
+   
 ]
 
 CORS_ALLOW_METHODS = [
@@ -148,6 +151,7 @@ CORS_ALLOW_HEADERS = [
     "x-csrftoken",
     "x-requested-with",
 ]
+
 
 ROOT_URLCONF = 'portalized.urls'
 
