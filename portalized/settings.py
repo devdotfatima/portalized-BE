@@ -36,9 +36,14 @@ else:
     print("❌ .env file NOT found")  # Debugging line
 
 # Load Stripe keys
-STRIPE_SECRET_KEY = env("STRIPE_SECRET_KEY", default="")
-STRIPE_PUBLISHABLE_KEY = env("STRIPE_PUBLISHABLE_KEY", default="")
-STRIPE_WEBHOOK_SECRET = env("STRIPE_WEBHOOK_SECRET", default="")
+# STRIPE_SECRET_KEY = env("STRIPE_SECRET_KEY", default="")
+# STRIPE_PUBLISHABLE_KEY = env("STRIPE_PUBLISHABLE_KEY", default="")
+# STRIPE_WEBHOOK_SECRET = env("STRIPE_WEBHOOK_SECRET", default="")
+
+STRIPE_SECRET_KEY = os.getenv("STRIPE_SECRET_KEY", "")
+STRIPE_PUBLISHABLE_KEY = os.getenv("STRIPE_PUBLISHABLE_KEY", "")
+STRIPE_WEBHOOK_SECRET = os.getenv("STRIPE_WEBHOOK_SECRET", "")
+
 
 
 print(f"🔑 STRIPE_SECRET_KEY: {STRIPE_SECRET_KEY[:10]}...")  # Debugging
@@ -131,7 +136,6 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
    "http://localhost:5173",
-    "127.0.0.1",
    
 ]
 
