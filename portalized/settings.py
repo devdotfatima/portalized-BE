@@ -123,6 +123,9 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
    "http://localhost:5173",
+    "127.0.0.1",
+    "portalized-0aad6191bbad.herokuapp.com",
+    os.getenv("HEROKU_APP_NAME") + ".herokuapp.com" if os.getenv("HEROKU_APP_NAME") else "",
 ]
 
 CORS_ALLOW_METHODS = [
