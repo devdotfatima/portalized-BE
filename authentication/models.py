@@ -58,12 +58,15 @@ class User(AbstractUser):
     mobile_number = models.CharField(max_length=15, unique=True, null=True, blank=True)  
     last_name = models.CharField(max_length=30, blank=True, null=True) 
     profile_picture = models.TextField(null=True, blank=True)
-    gender = models.CharField(null=True, blank=True)
-    high_school = models.CharField(null=True, blank=True)
-    college = models.CharField(null=True, blank=True)
-    division = models.CharField(null=True, blank=True)
-    school_year = models.CharField(null=True, blank=True)
-    year_left_to_play = models.CharField(null=True, blank=True)
+
+ 
+    gender = models.CharField(max_length=10, null=True, blank=True)
+    high_school = models.CharField(max_length=255, null=True, blank=True)
+    college = models.CharField(max_length=255, null=True, blank=True)
+    division = models.CharField(max_length=50, null=True, blank=True)
+    school_year = models.CharField(max_length=50, null=True, blank=True)
+    year_left_to_play = models.CharField(max_length=10, null=True, blank=True)
+
     fcm_token = models.CharField(max_length=255, blank=True, null=True)
     sport = models.ForeignKey(Sport, on_delete=models.SET_NULL, null=True, blank=True)
     position = models.ForeignKey(Position, on_delete=models.SET_NULL, null=True, blank=True)
