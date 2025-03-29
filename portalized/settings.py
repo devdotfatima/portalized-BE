@@ -255,4 +255,4 @@ EMAIL_HOST = "smtp.gmail.com"
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = "dusecadevelopers@gmail.com"
-EMAIL_HOST_PASSWORD = "xhfz gpmz sfja dpwr"  # Use an app password, not your actual password
+EMAIL_HOST_PASSWORD = "xhfz gpmz sfja dpwr"  
