@@ -137,7 +137,8 @@ CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:3000",
    "http://localhost:5173",
    "https://portalized-admin-panel-smoky.vercel.app",
-   "https://portalized-frontend.vercel.app"
+   "https://portalized-frontend.vercel.app",
+   "https://www.portalized.com"
    
 ]
 
