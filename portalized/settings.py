@@ -66,10 +66,10 @@ SECRET_KEY = 'django-insecure-tc&#jow-&n4$%f)iwyd%c^r657dy10se(g3181u#l8@@249koq
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    '1be6-103-141-159-83.ngrok-free.app' ,
-    '127.0.0.1'
-    "localhost",
-    "portalized-0aad6191bbad.herokuapp.com",
+    '1be6-103-141-159-83.ngrok-free.app',
+    '127.0.0.1',
+    'localhost',
+    'portalized-0aad6191bbad.herokuapp.com',
     os.getenv("HEROKU_APP_NAME") + ".herokuapp.com" if os.getenv("HEROKU_APP_NAME") else "",
 ]
 
@@ -97,6 +97,8 @@ INSTALLED_APPS = [
     "productreviews",
     "contactus",
     "sports",
+    "posts",
+    "coachingsessions",
 ]
 AUTH_USER_MODEL = "authentication.User"
 

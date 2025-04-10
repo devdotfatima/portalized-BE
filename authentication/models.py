@@ -61,6 +61,12 @@ class User(AbstractUser):
 
  
     gender = models.CharField(max_length=10, null=True, blank=True)
+    dob = models.DateField(null=True, blank=True)  # Date of birth
+    gender = models.CharField(max_length=10, null=True, blank=True)  # Gender (already there, just listed for clarity)
+    height = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)  # Height (e.g., in meters)
+    weight = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)  #
+
+
     high_school = models.CharField(max_length=255, null=True, blank=True)
     college = models.CharField(max_length=255, null=True, blank=True)
     division = models.CharField(max_length=50, null=True, blank=True)

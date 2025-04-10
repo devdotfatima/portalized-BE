@@ -41,3 +41,14 @@ class ResetPasswordSerializer(serializers.Serializer):
 
 class ForgotPasswordSerializer(serializers.Serializer):
     email = serializers.EmailField(required=True) 
+
+
+class AthleteProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = [
+            "dob", "gender", "height", "weight",
+            "high_school", "college", "division",
+            "school_year", "year_left_to_play",
+            "sport", "position","profile_picture"
+        ]

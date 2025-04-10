@@ -9,7 +9,7 @@ from rest_framework_simplejwt.tokens import AccessToken
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
-from .serializers import RegisterSerializer,ResetPasswordSerializer,ForgotPasswordSerializer
+from .serializers import RegisterSerializer,ResetPasswordSerializer,ForgotPasswordSerializer,AthleteProfileSerializer
 from .models import User
 
 
@@ -151,3 +151,28 @@ class LogoutView(APIView):
             return Response({"message": "Logged out successfully"}, status=status.HTTP_200_OK)
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        
+
+
+
+class AthleteProfileView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    @swagger_auto_schema(
+        operation_summary="Complete Athlete Profile",
+        operation_description="Allows an authenticated athlete to complete their profile after initial registration.",
+        request_body=AthleteProfileSerializer,
+        responses={
+            200: openapi.Response(
+                description="Profile updated successfully",
+                examples={"application/json": {"message": "Athlete profile updated successfully"}},
+            ),
+            400: "Bad Request – Invalid input"
+        }
+    )
+    def put(self, request):
+        serializer = AthleteProfileSerializer(instance=request.user, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"message": "Athlete profile updated successfully"}, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
