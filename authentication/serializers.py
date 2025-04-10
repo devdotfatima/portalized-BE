@@ -47,8 +47,8 @@ class AthleteProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = [
-            "dob", "gender", "height", "weight",
+            "dob", "gender", "height", "height_unit", "weight", "weight_unit",
             "high_school", "college", "division",
             "school_year", "year_left_to_play",
-            "sport", "position","profile_picture"
+            "sport", "position", "profile_picture"
         ]

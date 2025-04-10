@@ -50,6 +50,21 @@ class User(AbstractUser):
         ("general_user", "General User"),
     ]
 
+    HEIGHT_UNIT_CHOICES = [
+        ("cm", "Centimeters"),
+        ("inches", "Inches"),
+    ]
+    WEIGHT_UNIT_CHOICES = [
+        ("kg", "Kilograms"),
+        ("lbs", "Pounds"),
+    ]
+
+    height = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
+    height_unit = models.CharField(max_length=10, choices=HEIGHT_UNIT_CHOICES, null=True, blank=True)
+
+    weight = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
+    weight_unit = models.CharField(max_length=10, choices=WEIGHT_UNIT_CHOICES, null=True, blank=True)
+
     username = models.CharField(max_length=150, unique=True, null=True, blank=True)
     email = models.EmailField(unique=True, null=False)
     role = models.CharField(max_length=20, choices=ROLE_CHOICES, default="athlete")
@@ -62,9 +77,7 @@ class User(AbstractUser):
  
     gender = models.CharField(max_length=10, null=True, blank=True)
     dob = models.DateField(null=True, blank=True)  # Date of birth
-    gender = models.CharField(max_length=10, null=True, blank=True)  # Gender (already there, just listed for clarity)
-    height = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)  # Height (e.g., in meters)
-    weight = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)  #
+    gender = models.CharField(max_length=10, null=True, blank=True)  
 
 
     high_school = models.CharField(max_length=255, null=True, blank=True)
