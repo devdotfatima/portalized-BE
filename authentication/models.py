@@ -87,6 +87,7 @@ class User(AbstractUser):
     year_left_to_play = models.CharField(max_length=10, null=True, blank=True)
 
     fcm_token = models.CharField(max_length=255, blank=True, null=True)
+    performance_statistics = models.TextField(max_length=800, null=True, blank=True)
     sport = models.ForeignKey(Sport, on_delete=models.SET_NULL, null=True, blank=True)
     position = models.ForeignKey(Position, on_delete=models.SET_NULL, null=True, blank=True)
 
