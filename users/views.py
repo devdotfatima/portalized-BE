@@ -4,15 +4,15 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
 from authentication.models import User
 from drf_yasg.utils import swagger_auto_schema
-from .serializers import UserSerializer, EditProfileSerializer,UpdatePasswordSerializer
+from .serializers import UserSerializer, EditProfileSerializer,UpdatePasswordSerializer,FullUserProfileSerializer
 
 class GetUserProfileView(APIView):
     permission_classes = [IsAuthenticated]  # ✅ Only logged-in users can access
 
-    @swagger_auto_schema(responses={200: UserSerializer})
+    @swagger_auto_schema(responses={200: FullUserProfileSerializer})
     def get(self, request):
         """Retrieve the authenticated user's profile."""
-        serializer = UserSerializer(request.user)
+        serializer = FullUserProfileSerializer(request.user)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 

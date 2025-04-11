@@ -59,3 +59,21 @@ class UserSportPositionSerializer(serializers.ModelSerializer):
 
 
 
+class FullUserProfileSerializer(serializers.ModelSerializer):
+    full_name = serializers.SerializerMethodField()
+
+    class Meta:
+        model = User
+        fields = [
+            "id", "email", "username", "full_name", "role", "mobile_number", "profile_picture",
+            "first_name", "middle_name", "last_name",
+            "dob", "gender",
+            "height", "height_unit",
+            "weight", "weight_unit",
+            "high_school", "college", "division", "school_year", "year_left_to_play",
+            "sport", "position",
+            "fcm_token",
+        ]
+
+    def get_full_name(self, obj):
+        return " ".join(filter(None, [obj.first_name, obj.middle_name, obj.last_name]))
