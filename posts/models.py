@@ -25,7 +25,7 @@ class Post(models.Model):
     def __str__(self):
         return f"{self.user.email} - {self.caption[:20]}"
     
-    @property
+    # @property
     def is_liked_by_user(self, user):
         return self.likes.filter(user=user).exists()
 

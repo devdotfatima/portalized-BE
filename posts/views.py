@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from rest_framework.response import Response
 from rest_framework import viewsets, permissions
 from .models import Post, Like, Comment
 from .serializers import PostSerializer, LikeSerializer, CommentSerializer

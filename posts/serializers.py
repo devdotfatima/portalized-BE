@@ -3,10 +3,14 @@ from .models import Post, Like, Comment
 
 class CommentSerializer(serializers.ModelSerializer):
     user_email = serializers.EmailField(source='user.email', read_only=True)
+    user_first_name = serializers.CharField(source='user.first_name', read_only=True)
+    user_last_name = serializers.CharField(source='user.last_name', read_only=True)
+    user_profile_picture = serializers.CharField(source='user.profile_picture', read_only=True)
 
     class Meta:
         model = Comment
-        fields = ['id', 'user', 'user_email', 'post', 'content', 'created_at']
+        fields = ['id', 'user', 'user_email', 'post', 'content', 'created_at',  'user_first_name', 'user_last_name',
+            'user_profile_picture']
         read_only_fields = ['id', 'created_at']
 
 class LikeSerializer(serializers.ModelSerializer):
@@ -22,14 +26,17 @@ class PostSerializer(serializers.ModelSerializer):
     likes_count = serializers.IntegerField(source='likes.count', read_only=True)
     comments_count = serializers.IntegerField(source='comments.count', read_only=True)
     is_liked_by_user = serializers.SerializerMethodField()
-    comments = serializers.SerializerMethodField()  # Add the comments field
-    
+    comments = serializers.SerializerMethodField()  
+    user_first_name = serializers.CharField(source='user.first_name', read_only=True)
+    user_last_name = serializers.CharField(source='user.last_name', read_only=True)
+    user_profile_picture = serializers.CharField(source='user.profile_picture', read_only=True)
     class Meta:
         model = Post
         fields = [
             'id', 'user', 'user_email', 'caption', 'media_urls',
             'created_at', 'likes_count', 'comments_count', 'is_liked_by_user', 
-            'post_type', 'location', 'music', 'privacy', 'comments'
+            'post_type', 'location', 'music', 'privacy', 'comments','user_first_name', 'user_last_name',
+            'user_profile_picture'
         ]
         read_only_fields = ['id', 'created_at', 'likes_count', 'comments_count']
     
