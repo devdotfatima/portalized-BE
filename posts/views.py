@@ -1,4 +1,5 @@
 from rest_framework.response import Response
+from math import ceil
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.exceptions import NotFound
 from rest_framework.decorators import action
@@ -15,12 +16,30 @@ class CommentPagination(PageNumberPagination):
     page_size = 10
     page_size_query_param = 'page_size'
     max_page_size = 50
+    def get_paginated_response(self, data):
+        total_pages = ceil(self.page.paginator.count / self.page_size)
+        return Response({
+            'count': self.page.paginator.count,
+            'total_pages': total_pages,
+            'next': self.get_next_link(),
+            'previous': self.get_previous_link(),
+            'results': data
+        })
 
 
 class PostPagination(PageNumberPagination):
     page_size = 10
     page_size_query_param = 'page_size'
     max_page_size = 50
+    def get_paginated_response(self, data):
+        total_pages = ceil(self.page.paginator.count / self.page_size)
+        return Response({
+            'count': self.page.paginator.count,
+            'total_pages': total_pages,
+            'next': self.get_next_link(),
+            'previous': self.get_previous_link(),
+            'results': data
+        })
 
 
 class PostViewSet(viewsets.ModelViewSet):

@@ -3,6 +3,20 @@ from authentication.models import User
 from sports.models import Sport,Position
 from django.contrib.auth.hashers import check_password
 
+
+class SportSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Sport
+        fields = ["id", "name"]
+        ref_name = "UserSport"  # Add this
+
+class PositionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Position
+        fields = ["id", "name"]
+        ref_name = "UserPosition"  # Add this
+
+
 class UpdatePasswordSerializer(serializers.Serializer):
     current_password = serializers.CharField(write_only=True, required=True)
     new_password = serializers.CharField(write_only=True, min_length=6, required=True)
@@ -61,6 +75,8 @@ class UserSportPositionSerializer(serializers.ModelSerializer):
 
 class FullUserProfileSerializer(serializers.ModelSerializer):
     full_name = serializers.SerializerMethodField()
+    sport = SportSerializer(read_only=True)
+    position = PositionSerializer(read_only=True)
 
     class Meta:
         model = User

@@ -84,7 +84,7 @@ class User(AbstractUser):
     college = models.CharField(max_length=255, null=True, blank=True)
     division = models.CharField(max_length=50, null=True, blank=True)
     school_year = models.CharField(max_length=50, null=True, blank=True)
-    year_left_to_play = models.CharField(max_length=10, null=True, blank=True)
+    year_left_to_play = models.DateField(max_length=10, null=True, blank=True)
 
     fcm_token = models.CharField(max_length=255, blank=True, null=True)
     performance_statistics = models.TextField(max_length=800, null=True, blank=True)

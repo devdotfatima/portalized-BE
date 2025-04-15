@@ -1,4 +1,13 @@
 from rest_framework.views import APIView
+from rest_framework.pagination import PageNumberPagination
+from math import ceil
+from rest_framework.response import Response
+from datetime import date
+from django.db.models import Q
+from rest_framework.generics import ListAPIView
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
+
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
@@ -41,3 +50,88 @@ class EditUserProfileView(APIView):
             serializer.save()
             return Response({"message": "Profile updated successfully"}, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+class AthleteSearchPagination(PageNumberPagination):
+    page_size = 10
+    page_size_query_param = 'page_size'
+    max_page_size = 100
+
+    def get_paginated_response(self, data):
+        total_pages = ceil(self.page.paginator.count / self.page.paginator.per_page)
+        return Response({
+            'count': self.page.paginator.count,
+            'total_pages': total_pages,
+            'next': self.get_next_link(),
+            'previous': self.get_previous_link(),
+            'results': data
+        })
+
+class AthleteSearchAPIView(ListAPIView):
+    serializer_class = FullUserProfileSerializer
+    permission_classes = [IsAuthenticated]
+    pagination_class = AthleteSearchPagination
+
+    @swagger_auto_schema(
+        operation_summary="Search Athletes",
+        operation_description="Allows coaches to search athletes by name, weight, height, sport, position, and division.",
+        manual_parameters=[
+            openapi.Parameter("name", openapi.IN_QUERY, description="Search by first, middle, or last name", type=openapi.TYPE_STRING),
+            openapi.Parameter("weight", openapi.IN_QUERY, description="Exact weight", type=openapi.TYPE_INTEGER),
+            openapi.Parameter("height", openapi.IN_QUERY, description="Exact height", type=openapi.TYPE_INTEGER),
+            openapi.Parameter("sport", openapi.IN_QUERY, description="Sport ID", type=openapi.TYPE_INTEGER),
+            openapi.Parameter("position", openapi.IN_QUERY, description="Position ID", type=openapi.TYPE_INTEGER),
+            openapi.Parameter("division", openapi.IN_QUERY, description="Partial match on division", type=openapi.TYPE_STRING),
+            openapi.Parameter("eligibility", openapi.IN_QUERY, description="Years left to play (e.g., 2 for athletes with ≤2 years left)", type=openapi.TYPE_INTEGER),
+        ],
+        responses={200: FullUserProfileSerializer(many=True)}
+    )
+    def get(self, request, *args, **kwargs):
+        return super().get(request, *args, **kwargs)
+
+    def get_queryset(self):
+        user = self.request.user
+
+        if user.role != "coach":
+            return User.objects.none()
+
+        queryset = User.objects.filter(role="athlete")
+
+        name = self.request.query_params.get("name")
+        weight = self.request.query_params.get("weight")
+        height = self.request.query_params.get("height")
+        sport = self.request.query_params.get("sport")
+        position = self.request.query_params.get("position")
+        division = self.request.query_params.get("division")
+        eligibility = self.request.query_params.get("eligibility")  
+
+        if name:
+            queryset = queryset.filter(
+                Q(first_name__icontains=name) |
+                Q(middle_name__icontains=name) |
+                Q(last_name__icontains=name)
+            )
+
+        if weight:
+            queryset = queryset.filter(weight=weight)
+
+        if height:
+            queryset = queryset.filter(height=height)
+
+        if sport:
+            queryset = queryset.filter(sport_id=sport)
+
+        if position:
+            queryset = queryset.filter(position_id=position)
+
+        if division:
+            queryset = queryset.filter(division__icontains=division)
+
+        if eligibility:
+            try:
+                years_left = int(eligibility)
+                cutoff_date = date.today().replace(year=date.today().year + years_left)
+                queryset = queryset.filter(year_left_to_play__lte=cutoff_date)
+            except ValueError:
+                pass
+
+        return queryset.order_by("id") 
