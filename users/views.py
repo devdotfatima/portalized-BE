@@ -70,68 +70,72 @@ class AthleteSearchAPIView(ListAPIView):
     serializer_class = FullUserProfileSerializer
     permission_classes = [IsAuthenticated]
     pagination_class = AthleteSearchPagination
-
     @swagger_auto_schema(
-        operation_summary="Search Athletes",
-        operation_description="Allows coaches to search athletes by name, weight, height, sport, position, and division.",
+        operation_summary="Search Users by Role",
+        operation_description=(
+            "Allows searching for users by role (athlete or coach). "
+            "When role=athlete, you can filter by name, weight, height, sport, position, division, and eligibility. "
+            "When role=coach, you can only filter by name."
+        ),
         manual_parameters=[
+            openapi.Parameter("role", openapi.IN_QUERY, description="Role to search: 'athlete' or 'coach'", type=openapi.TYPE_STRING, required=True),
             openapi.Parameter("name", openapi.IN_QUERY, description="Search by first, middle, or last name", type=openapi.TYPE_STRING),
-            openapi.Parameter("weight", openapi.IN_QUERY, description="Exact weight", type=openapi.TYPE_INTEGER),
-            openapi.Parameter("height", openapi.IN_QUERY, description="Exact height", type=openapi.TYPE_INTEGER),
-            openapi.Parameter("sport", openapi.IN_QUERY, description="Sport ID", type=openapi.TYPE_INTEGER),
-            openapi.Parameter("position", openapi.IN_QUERY, description="Position ID", type=openapi.TYPE_INTEGER),
-            openapi.Parameter("division", openapi.IN_QUERY, description="Partial match on division", type=openapi.TYPE_STRING),
-            openapi.Parameter("eligibility", openapi.IN_QUERY, description="Years left to play (e.g., 2 for athletes with ≤2 years left)", type=openapi.TYPE_INTEGER),
+            openapi.Parameter("weight", openapi.IN_QUERY, description="Exact weight (athlete only)", type=openapi.TYPE_INTEGER),
+            openapi.Parameter("height", openapi.IN_QUERY, description="Exact height (athlete only)", type=openapi.TYPE_INTEGER),
+            openapi.Parameter("sport", openapi.IN_QUERY, description="Sport ID (athlete only)", type=openapi.TYPE_INTEGER),
+            openapi.Parameter("position", openapi.IN_QUERY, description="Position ID (athlete only)", type=openapi.TYPE_INTEGER),
+            openapi.Parameter("division", openapi.IN_QUERY, description="Partial match on division (athlete only)", type=openapi.TYPE_STRING),
+            openapi.Parameter("eligibility", openapi.IN_QUERY, description="Years left to play (athlete only)", type=openapi.TYPE_INTEGER),
         ],
         responses={200: FullUserProfileSerializer(many=True)}
     )
     def get(self, request, *args, **kwargs):
         return super().get(request, *args, **kwargs)
 
+
     def get_queryset(self):
-        user = self.request.user
+      params = self.request.query_params
+      role = params.get("role")
 
-        if user.role != "coach":
-            return User.objects.none()
+      if role not in ["athlete", "coach"]:
+          return User.objects.none()
 
-        queryset = User.objects.filter(role="athlete")
+      queryset = User.objects.filter(role=role)
 
-        name = self.request.query_params.get("name")
-        weight = self.request.query_params.get("weight")
-        height = self.request.query_params.get("height")
-        sport = self.request.query_params.get("sport")
-        position = self.request.query_params.get("position")
-        division = self.request.query_params.get("division")
-        eligibility = self.request.query_params.get("eligibility")  
+      # Filters shared for both roles
+      name = params.get("name")
+      if name:
+          queryset = queryset.filter(
+              Q(first_name__icontains=name) |
+              Q(middle_name__icontains=name) |
+              Q(last_name__icontains=name)
+          )
 
-        if name:
-            queryset = queryset.filter(
-                Q(first_name__icontains=name) |
-                Q(middle_name__icontains=name) |
-                Q(last_name__icontains=name)
-            )
+      # Extra filters only for athlete role
+      if role == "athlete":
+          weight = params.get("weight")
+          height = params.get("height")
+          sport = params.get("sport")
+          position = params.get("position")
+          division = params.get("division")
+          eligibility = params.get("eligibility")
 
-        if weight:
-            queryset = queryset.filter(weight=weight)
+          if weight:
+              queryset = queryset.filter(weight=weight)
+          if height:
+              queryset = queryset.filter(height=height)
+          if sport:
+              queryset = queryset.filter(sport_id=sport)
+          if position:
+              queryset = queryset.filter(position_id=position)
+          if division:
+              queryset = queryset.filter(division__icontains=division)
+          if eligibility:
+              try:
+                  years_left = int(eligibility)
+                  cutoff_date = date.today().replace(year=date.today().year + years_left)
+                  queryset = queryset.filter(year_left_to_play__lte=cutoff_date)
+              except ValueError:
+                  pass
 
-        if height:
-            queryset = queryset.filter(height=height)
-
-        if sport:
-            queryset = queryset.filter(sport_id=sport)
-
-        if position:
-            queryset = queryset.filter(position_id=position)
-
-        if division:
-            queryset = queryset.filter(division__icontains=division)
-
-        if eligibility:
-            try:
-                years_left = int(eligibility)
-                cutoff_date = date.today().replace(year=date.today().year + years_left)
-                queryset = queryset.filter(year_left_to_play__lte=cutoff_date)
-            except ValueError:
-                pass
-
-        return queryset.order_by("id") 
+      return queryset.order_by("id")
