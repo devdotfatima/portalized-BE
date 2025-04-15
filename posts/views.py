@@ -1,4 +1,5 @@
 from rest_framework.response import Response
+from django.contrib.auth.models import AnonymousUser
 from math import ceil
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.exceptions import NotFound
@@ -54,7 +55,14 @@ class PostViewSet(viewsets.ModelViewSet):
         serializer.save(user=self.request.user)
 
     def get_queryset(self):
+        if getattr(self, 'swagger_fake_view', False):
+        # Return an empty queryset or some safe fallback
+          return Post.objects.none()
         queryset = Post.objects.prefetch_related('likes', 'comments').order_by('-created_at')
+        if not isinstance(self.request.user, AnonymousUser):
+            queryset = queryset.exclude(user=self.request.user)
+        
+            return queryset
         if not self.request.query_params.get('user'):
             queryset = queryset.exclude(user=self.request.user)
         return queryset
