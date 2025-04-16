@@ -99,6 +99,7 @@ INSTALLED_APPS = [
     "sports",
     "posts",
     "coachingsessions",
+    "chat",
 ]
 AUTH_USER_MODEL = "authentication.User"
 

@@ -11,5 +11,5 @@ class SportSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Sport
-        fields = ["id", "name", "created_at", "positions"]
+        fields = ["id", "name", "gender", "created_at", "positions"]
         read_only_fields = [ "created_at"]  # Prevent users from modifying these fields
