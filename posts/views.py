@@ -59,12 +59,15 @@ class PostViewSet(viewsets.ModelViewSet):
         # Return an empty queryset or some safe fallback
           return Post.objects.none()
         queryset = Post.objects.prefetch_related('likes', 'comments').order_by('-created_at')
-        if not isinstance(self.request.user, AnonymousUser):
-            queryset = queryset.exclude(user=self.request.user)
         
-            return queryset
-        if not self.request.query_params.get('user'):
-            queryset = queryset.exclude(user=self.request.user)
+            # Filter by user if provided
+        user_param = self.request.query_params.get('user')
+        if user_param:
+            queryset = queryset.filter(user_id=user_param)
+        else:
+            # Only exclude current user's posts if no specific user is requested
+            if not isinstance(self.request.user, AnonymousUser):
+                queryset = queryset.exclude(user=self.request.user)
         return queryset
 
     @swagger_auto_schema(
