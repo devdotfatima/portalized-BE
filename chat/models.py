@@ -2,7 +2,7 @@ from django.db import models
 from authentication.models import User
 
 class Chat(models.Model):
-    chathead_id = models.IntegerField(unique=True)  # Must be manually provided
+    chat_id = models.IntegerField(unique=True)
     participants = models.ManyToManyField(User, related_name='chats')
     created_at = models.DateTimeField(auto_now_add=True)
 
