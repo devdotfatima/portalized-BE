@@ -16,14 +16,29 @@ from drf_yasg.utils import swagger_auto_schema
 from .serializers import UserSerializer, EditProfileSerializer,UpdatePasswordSerializer,FullUserProfileSerializer
 
 class GetUserProfileView(APIView):
-    permission_classes = [IsAuthenticated]  # ✅ Only logged-in users can access
+    permission_classes = [IsAuthenticated]
 
-    @swagger_auto_schema(responses={200: FullUserProfileSerializer})
+    @swagger_auto_schema(
+        manual_parameters=[
+            openapi.Parameter(
+                'user', openapi.IN_QUERY, description="User ID to fetch profile for (optional)", type=openapi.TYPE_INTEGER
+            )
+        ],
+        responses={200: FullUserProfileSerializer}
+    )
     def get(self, request):
-        """Retrieve the authenticated user's profile."""
-        serializer = FullUserProfileSerializer(request.user)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        user_id = request.query_params.get("user")
 
+        if user_id:
+            try:
+                user = User.objects.get(id=user_id)
+            except User.DoesNotExist:
+                return Response({"detail": "User not found."}, status=status.HTTP_404_NOT_FOUND)
+        else:
+            user = request.user
+
+        serializer = FullUserProfileSerializer(user)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 class UpdatePasswordView(APIView):
     permission_classes = [IsAuthenticated]  
@@ -65,6 +80,7 @@ class AthleteSearchPagination(PageNumberPagination):
             'previous': self.get_previous_link(),
             'results': data
         })
+
 
 class AthleteSearchAPIView(ListAPIView):
     serializer_class = FullUserProfileSerializer
