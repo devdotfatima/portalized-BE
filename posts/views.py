@@ -1,6 +1,7 @@
 from rest_framework.response import Response
 from django.contrib.auth.models import AnonymousUser
 from math import ceil
+from rest_framework import filters
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.exceptions import NotFound
 from rest_framework.decorators import action
@@ -9,8 +10,9 @@ from rest_framework import viewsets, permissions, status
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 from .models import Post, Like, Comment
+from notifications.models import Notification
 from .serializers import PostSerializer, LikeSerializer, CommentSerializer
-from rest_framework import filters
+
 
 
 class CommentPagination(PageNumberPagination):
@@ -186,6 +188,14 @@ class LikeViewSet(viewsets.ModelViewSet):
             return Response({"message": "Post unliked"}, status=status.HTTP_200_OK)
         else:
             like = Like.objects.create(user=user, post=post)
+            if post.user != user:
+              Notification.objects.create(
+                  recipient=post.user,
+                  sender=user,
+                  notification_type='like',
+                  message=f"{request.user.first_name} {request.user.last_name} liked your post",  
+                  link=f"/posts/{post.id}"
+              )
             serializer = self.get_serializer(like)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
@@ -202,7 +212,27 @@ class CommentViewSet(viewsets.ModelViewSet):
         responses={201: CommentSerializer()}
     )
     def create(self, request, *args, **kwargs):
-        return super().create(request, *args, **kwargs)
+            serializer = self.get_serializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            comment = serializer.save(user=request.user)
+
+            # Fetch the post and its owner
+            post = comment.post
+            post_owner = post.user
+
+            # Avoid notifying the commenter themselves
+            if post_owner != request.user:
+                print("here")
+                Notification.objects.create(
+                  recipient=post_owner,
+                  sender=request.user,
+                  notification_type='comment',
+                  message=f"{request.user.first_name} {request.user.last_name} commented on your post", 
+                  link=f"/posts/{post.id}"
+              )
+                
+            return Response(serializer.data, status=status.HTTP_201_CREATED) 
+
 
     @swagger_auto_schema(
         operation_summary="List all comments",

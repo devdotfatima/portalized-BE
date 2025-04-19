@@ -100,6 +100,7 @@ INSTALLED_APPS = [
     "posts",
     "coachingsessions",
     "chat",
+    "notifications"
 ]
 AUTH_USER_MODEL = "authentication.User"
 
