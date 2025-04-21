@@ -11,9 +11,9 @@ class Notification(models.Model):
 
     recipient = models.ForeignKey(User, on_delete=models.CASCADE, related_name='notifications')
     sender = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='sent_notifications')
-    
+    title = models.TextField(default="")  
     notification_type = models.CharField(max_length=20, choices=NOTIFICATION_TYPES)
-    message = models.TextField()
+    message = models.TextField(null=True, blank=True)
     link = models.URLField(null=True, blank=True)  # optional — e.g., link to a post or order
 
     is_read = models.BooleanField(default=False)

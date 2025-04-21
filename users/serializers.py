@@ -92,7 +92,11 @@ class FullUserProfileSerializer(serializers.ModelSerializer):
             "weight", "weight_unit",
             "high_school", "college", "division", "school_year", "year_left_to_play",
             "sport", "position",
-            "fcm_token","performance_statistics"
+            "fcm_token","performance_statistics","fcm_token",
+            "is_online",
+            "notify_on_like",
+            "notify_on_comment",
+            "notify_on_chat"
         ]
 
     def get_full_name(self, obj):

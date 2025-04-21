@@ -227,7 +227,8 @@ class CommentViewSet(viewsets.ModelViewSet):
                   recipient=post_owner,
                   sender=request.user,
                   notification_type='comment',
-                  message=f"{request.user.first_name} {request.user.last_name} commented on your post", 
+                  title=f"{request.user.first_name} {request.user.last_name} commented on your post", 
+                  message=comment.content,
                   link=f"/posts/{post.id}"
               )
                 
