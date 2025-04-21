@@ -44,7 +44,11 @@ class UserSerializer(serializers.ModelSerializer):
 class EditProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ["username","mobile_number" ,"profile_picture", "first_name", "middle_name", "last_name"] 
+        fields = ["username","mobile_number" ,"profile_picture", "first_name", "middle_name", "last_name",  "fcm_token",
+            "is_online",
+            "notify_on_like",
+            "notify_on_comment",
+            "notify_on_chat"] 
 
 
 

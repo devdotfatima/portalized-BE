@@ -193,7 +193,7 @@ class LikeViewSet(viewsets.ModelViewSet):
                   recipient=post.user,
                   sender=user,
                   notification_type='like',
-                  message=f"{request.user.first_name} {request.user.last_name} liked your post",  
+                  title=f"{request.user.first_name} {request.user.last_name} liked your post",  
                   link=f"/posts/{post.id}"
               )
             serializer = self.get_serializer(like)

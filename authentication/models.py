@@ -74,6 +74,12 @@ class User(AbstractUser):
     last_name = models.CharField(max_length=30, blank=True, null=True) 
     profile_picture = models.TextField(null=True, blank=True)
 
+    is_online = models.BooleanField(default=False)
+
+    notify_on_like = models.BooleanField(default=True)
+    notify_on_comment = models.BooleanField(default=True)
+    notify_on_chat = models.BooleanField(default=True)
+
  
     gender = models.CharField(max_length=10, null=True, blank=True)
     dob = models.DateField(null=True, blank=True)  # Date of birth
