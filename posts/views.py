@@ -1,5 +1,6 @@
 from rest_framework.response import Response
 from django.contrib.auth.models import AnonymousUser
+from firebase_admin import messaging
 from math import ceil
 from rest_framework import filters
 from django_filters.rest_framework import DjangoFilterBackend
@@ -146,6 +147,7 @@ class LikeViewSet(viewsets.ModelViewSet):
     serializer_class = LikeSerializer
     permission_classes = [permissions.IsAuthenticated]
 
+
     @swagger_auto_schema(
         operation_summary="Toggle like/unlike",
         operation_description="""
@@ -196,6 +198,23 @@ class LikeViewSet(viewsets.ModelViewSet):
                   title=f"{request.user.first_name} {request.user.last_name} liked your post",  
                   link=f"/posts/{post.id}"
               )
+              """Send FCM push notification."""
+              if post.user.fcm_token:
+                try:
+                      message = messaging.Message(
+                          notification=messaging.Notification(
+                              title=f"{request.user.first_name} {request.user.last_name} liked your post",
+                              body=f"{request.user.first_name} {request.user.last_name} liked your post",
+                          ),
+                          token=post.user.fcm_token,
+                          data={
+                              "link": f"/posts/{post.id}"
+                          },
+                      )
+                      response = messaging.send(message)
+                      print('Successfully sent message:', response)
+                except Exception as e:
+                      print(f"Error sending notification: {e}")
             serializer = self.get_serializer(like)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
