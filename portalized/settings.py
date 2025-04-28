@@ -35,20 +35,19 @@ if os.path.exists(env_file):
 else:
     print("❌ .env file NOT found")  # Debugging line
 
-# Load Stripe keys
-# STRIPE_SECRET_KEY = env("STRIPE_SECRET_KEY", default="")
-# STRIPE_PUBLISHABLE_KEY = env("STRIPE_PUBLISHABLE_KEY", default="")
-# STRIPE_WEBHOOK_SECRET = env("STRIPE_WEBHOOK_SECRET", default="")
+
 
 STRIPE_SECRET_KEY = os.getenv("STRIPE_SECRET_KEY", "")
 STRIPE_PUBLISHABLE_KEY = os.getenv("STRIPE_PUBLISHABLE_KEY", "")
 STRIPE_WEBHOOK_SECRET = os.getenv("STRIPE_WEBHOOK_SECRET", "")
+FIREBASE_CREDENTIALS = os.getenv("FIREBASE_CREDENTIALS", "")
 
 
 
 print(f"🔑 STRIPE_SECRET_KEY: {STRIPE_SECRET_KEY[:10]}...")  # Debugging
 print(f"🔑 STRIPE_PUBLISHABLE_KEY: {STRIPE_PUBLISHABLE_KEY[:10]}...")  # Debugging
 print(f"🔑 STRIPE_WEBHOOK_SECRET: {STRIPE_WEBHOOK_SECRET[:10]}...")  # Debugging
+print(f"🔑 FIREBASE_CREDENTIALS: {FIREBASE_CREDENTIALS[:2]}...")  # Debugging
 
 
 
