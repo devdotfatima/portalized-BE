@@ -51,8 +51,7 @@ class AthleteProfileSerializer(serializers.ModelSerializer):
             "high_school", "college", "division",
             "school_year", "year_left_to_play",
             "sport", "position", "profile_picture","performance_statistics",  "first_name" ,
-    "middle_name",
-    "mobile_number" ,
-    "last_name" 
-   
-        ]
+              "middle_name",
+              "mobile_number" ,
+              "last_name" 
+           ]

@@ -2,6 +2,7 @@ from rest_framework import serializers
 from authentication.models import User
 from sports.models import Sport,Position
 from django.contrib.auth.hashers import check_password
+from relationships.models import Follow
 
 
 class SportSerializer(serializers.ModelSerializer):
@@ -44,11 +45,17 @@ class UserSerializer(serializers.ModelSerializer):
 class EditProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ["username","mobile_number" ,"profile_picture", "first_name", "middle_name", "last_name",  "fcm_token",
-            "is_online",
-            "notify_on_like",
-            "notify_on_comment",
-            "notify_on_chat"] 
+        fields = ["username","mobile_number" ,"profile_picture", "first_name", "middle_name", "last_name",  
+                  "gender", "height", "height_unit", "weight", "weight_unit",
+                  "high_school", "college", "division",
+                  "school_year", "year_left_to_play", "dob",
+                  "sport", "position",
+                  "fcm_token",
+                  "is_online",
+                  "notify_on_like",
+                  "notify_on_comment",
+                  "notify_on_chat"
+                  ] 
 
 
 
@@ -81,6 +88,8 @@ class FullUserProfileSerializer(serializers.ModelSerializer):
     full_name = serializers.SerializerMethodField()
     sport = SportSerializer(read_only=True)
     position = PositionSerializer(read_only=True)
+    followers_count = serializers.SerializerMethodField()
+    following_count = serializers.SerializerMethodField()
 
     class Meta:
         model = User
@@ -96,8 +105,17 @@ class FullUserProfileSerializer(serializers.ModelSerializer):
             "is_online",
             "notify_on_like",
             "notify_on_comment",
-            "notify_on_chat"
+            "notify_on_chat",
+            "followers_count", "following_count"
         ]
 
     def get_full_name(self, obj):
         return " ".join(filter(None, [obj.first_name, obj.middle_name, obj.last_name]))
+    
+    def get_followers_count(self, obj):
+        # Count the number of followers for this user
+        return Follow.objects.filter(followed=obj).count()
+
+    def get_following_count(self, obj):
+        # Count the number of users this user is following
+        return Follow.objects.filter(follower=obj).count()
