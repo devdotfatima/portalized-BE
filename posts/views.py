@@ -241,7 +241,7 @@ class CommentViewSet(viewsets.ModelViewSet):
 
             # Avoid notifying the commenter themselves
             if post_owner != request.user:
-                print("here")
+               
                 Notification.objects.create(
                   recipient=post_owner,
                   sender=request.user,
@@ -250,6 +250,33 @@ class CommentViewSet(viewsets.ModelViewSet):
                   message=comment.content,
                   link=f"/posts/{post.id}"
               )
+                
+            
+            print("here",post_owner.fcm_token)                # Send FCM notification to the post owner
+            try:
+                # Get the FCM token for the post owner (you need to store the FCM token somewhere)
+                fcm_token = post_owner.fcm_token  # Assuming the token is stored in the user profile
+                print(fcm_token,post_owner)
+                if fcm_token:
+                    # Send the notification
+                    message = messaging.Message(
+                        notification=messaging.Notification(
+                            title=f"{request.user.first_name} {request.user.last_name} commented on your post",
+                            body=comment.content,
+                        ),
+                        token=fcm_token,
+                        data={
+                            "click_action": "FLUTTER_NOTIFICATION_CLICK",  # For handling notification click
+                            "post_id": str(post.id),  # You can pass additional data like post ID
+                        }
+                    )
+                    # Send the message
+                    response = messaging.send(message)
+                    print(f"Successfully sent message: {response}")
+                else:
+                    print("No FCM token found for the post owner.")
+            except Exception as e:
+                print(f"Error sending FCM notification: {e}")
                 
             return Response(serializer.data, status=status.HTTP_201_CREATED) 
 
