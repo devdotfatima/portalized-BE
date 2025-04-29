@@ -13,6 +13,7 @@ from drf_yasg import openapi
 from .models import Post, Like, Comment
 from notifications.models import Notification
 from .serializers import PostSerializer, LikeSerializer, CommentSerializer
+from authentication.models import User
 
 
 
@@ -237,7 +238,9 @@ class CommentViewSet(viewsets.ModelViewSet):
 
             # Fetch the post and its owner
             post = comment.post
-            post_owner = post.user
+            post_owner = User.objects.get(id=post.user_id)
+            print("Post owner object:", post_owner)
+            print("FCM Token from DB:", post_owner.fcm_token)
 
             # Avoid notifying the commenter themselves
             if post_owner != request.user:
