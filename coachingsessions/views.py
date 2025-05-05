@@ -3,6 +3,7 @@ from rest_framework.response import Response
 from rest_framework import views
 from drf_yasg import openapi
 from django.db import models
+from django.db.models import Q
 from django.utils import timezone
 from drf_yasg.utils import swagger_auto_schema
 from django.contrib.auth.models import AnonymousUser
@@ -69,6 +70,38 @@ class SessionRequestStatusUpdateView(AuthenticatedBaseView, views.APIView):
         session_request.save()
 
         return Response({'message': f'Session request {new_status} successfully.'}, status=200)
+
+
+class SessionsBetweenUsersView(AuthenticatedBaseView, generics.ListAPIView):
+    serializer_class = SessionRequestSerializer
+    pagination_class = SessionRequestPagination
+
+    @swagger_auto_schema(
+        operation_description="Get paginated session requests between two users (coach and athlete).",
+        manual_parameters=[
+            openapi.Parameter('user1_id', openapi.IN_QUERY, type=openapi.TYPE_INTEGER, required=True, description='First user ID'),
+            openapi.Parameter('user2_id', openapi.IN_QUERY, type=openapi.TYPE_INTEGER, required=True, description='Second user ID'),
+            openapi.Parameter('page', openapi.IN_QUERY, type=openapi.TYPE_INTEGER, description='Page number'),
+            openapi.Parameter('page_size', openapi.IN_QUERY, type=openapi.TYPE_INTEGER, description='Page size (max 50)'),
+        ],
+        responses={200: SessionRequestSerializer(many=True)}
+    )
+    def get(self, request, *args, **kwargs):
+        return super().get(request, *args, **kwargs)
+
+    def get_queryset(self):
+        self.check_authenticated()
+
+        user1_id = self.request.query_params.get('user1_id')
+        user2_id = self.request.query_params.get('user2_id')
+
+        if not user1_id or not user2_id:
+            return SessionRequest.objects.none()
+
+        return SessionRequest.objects.filter(
+            (Q(coach_id=user1_id) & Q(athlete_id=user2_id)) |
+            (Q(coach_id=user2_id) & Q(athlete_id=user1_id))
+        ).order_by('-session_date', '-session_time')
 
 
 class SessionRequestListView(AuthenticatedBaseView, generics.ListAPIView):
